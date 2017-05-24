@@ -52,7 +52,7 @@
   },
   "scripts": {
     "template:remove": "rimraf public && mkdir public && cd public && mkdir partials && mkdir layouts",
-    "template:copy": "cpx src/backend/views/*.hbs public && cpx src/backend/views/layouts/*.hbs public/layouts && cpx src/backend/views/partials/*.hbs public/partials",
+    "template:copy": "cpx \"src/backend/views/*.hbs\" public && cpx \"src/backend/views/layouts/*.hbs\" public/layouts && cpx \"src/backend/views/partials/*.hbs\" public/partials",
     "template:refresh": "run-s template:remove template:copy",
     "template:watch": "onchange \"src/backend/views/**/*.hbs\" -- npm run \"template:refresh\"",
     "template:service": "run-s template:refresh template:watch",
@@ -63,6 +63,9 @@
     "server:retranspile": "babel -w src/backend -d build",
     "server:restart": "cross-env NODE_ENV=development nodemon --watch build --exec \"node build/server.js\"",
     "server:watch": "run-p server:retranspile server:restart template:service",
-    "start:dev:server": "run-s server:prepare server:watch"
+    "start:dev:server": "run-s server:prepare server:watch",
+    "restart:prod:server":"cross-env NODE_ENV=production nodemon --watch build --exec \"node build/server.js\"",
+    "watch:prod:server":"run-p server:retranspile restart:prod:server template:service",
+    "start": "run-s server:prepare watch:prod:server"
   }
 }
