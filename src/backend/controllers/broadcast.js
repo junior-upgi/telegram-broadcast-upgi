@@ -29,6 +29,11 @@ module.exports = () => {
                 })
             );
         });
+        // PROBLEM: THE OUT GOING MESSAGES CAN BE CONTROLLED IN AN ORDERLY FASHION
+        // USING BLUEBIRD'S PROMISE.EACH()
+        // HOWEVER, IT'S NOT POSSIBLE TO CONTROL WHEN TELEGRAM ACTUALLY RECEIVES THE
+        // MESSAGE, THEREFORE CONCENTRATED MESSAGE TO A SINGLE USER DOES NOT
+        // DISPLAY IN SEQUENCE THAT IT WAS SENT!!!!!
         Promise.all(broadcastRequests)
             .then((broadcastedMessages) => {
                 console.log('---------------------------------------------');
