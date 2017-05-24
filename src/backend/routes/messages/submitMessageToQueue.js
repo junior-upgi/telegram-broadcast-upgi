@@ -6,6 +6,28 @@ import messageQueue from '../../controllers/messageQueue.js';
 
 module.exports = processMessageSubmissionRequest;
 
+export function processMessageSubmissionRequest(request, response, next) {
+    if ( // found a request.body.messages array
+        (request.body.messages !== undefined) &&
+        Array.isArray(request.body.messages)
+    ) {
+        messageArray(request, response, next);
+    } else if ( // find a single message object
+        (request.body.chat_id !== undefined) &&
+        (request.body.text !== undefined)
+    ) {
+        singleMessage(request, response, next);
+    } else { // did not find valid messages
+        routerResponse.json({
+            pendingResponse: response,
+            originalRequest: request,
+            statusCode: 400,
+            success: false,
+            message: 'did not find valid messages'
+        });
+    }
+}
+
 function singleMessage(request, response, next) {
     db.Chats.findOne({
         where: { id: request.body.chat_id }
@@ -49,28 +71,6 @@ function singleMessage(request, response, next) {
             message: 'database lookup error while processing a \'/message\' request'
         });
     });
-}
-
-export function processMessageSubmissionRequest(request, response, next) {
-    if ( // found a request.body.messages array
-        (request.body.messages !== undefined) &&
-        Array.isArray(request.body.messages)
-    ) {
-        messageArray(request, response, next);
-    } else if ( // find a single message object
-        (request.body.chat_id !== undefined) &&
-        (request.body.text !== undefined)
-    ) {
-        singleMessage(request, response, next);
-    } else { // did not find valid messages
-        routerResponse.json({
-            pendingResponse: response,
-            originalRequest: request,
-            statusCode: 400,
-            success: false,
-            message: 'did not find valid messages'
-        });
-    }
 }
 
 function messageArray(request, response, next) {
